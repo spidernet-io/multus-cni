@@ -6,6 +6,12 @@
 
 Multus CNI enables attaching multiple network interfaces to pods in Kubernetes.
 
+## NOTE
+
+This repository is to adapt the DRA feature of [Spiderpool](https://github.com/spidernet-io/spiderpool), we need to convert the MultusNames field in the [SpiderClaimParameter](https://github.com/spidernet-io/spiderpool/blob/main/docs/reference/crd-spiderclaimparameter.md) object referenced by the Pod to multus annoatations.
+
+All the newly added code is stored under the [pkg/spiderpool](./pkg/spiderpool/) path and then we call it in [cmdAdd](pkg/multus/multus.go).
+
 ## How it works
 
 Multus CNI is a container network interface (CNI) plugin for Kubernetes that enables attaching multiple network interfaces to pods. Typically, in Kubernetes each pod only has one network interface (apart from a loopback) -- with Multus you can create a multi-homed pod that has multiple interfaces. This is accomplished by Multus acting as a "meta-plugin", a CNI plugin that can call multiple other CNI plugins.

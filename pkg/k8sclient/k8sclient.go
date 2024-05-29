@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Copyright 2024 Authors of spidernet-io
+// SPDX-License-Identifier: Apache-2.0
+// spidernet-io team make some changes at 06,21,2024
+
 package k8sclient
 
 import (
@@ -24,7 +28,10 @@ import (
 	"strings"
 	"time"
 
+	spider_types "github.com/spidernet-io/spiderpool/pkg/k8s/apis/spiderpool.spidernet.io/v2beta1"
 	v1 "k8s.io/api/core/v1"
+	resourcev1alpha2 "k8s.io/api/resource/v1alpha2"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes"
@@ -41,6 +48,7 @@ import (
 	nettypes "github.com/k8snetworkplumbingwg/network-attachment-definition-client/pkg/apis/k8s.cni.cncf.io/v1"
 	netclient "github.com/k8snetworkplumbingwg/network-attachment-definition-client/pkg/client/clientset/versioned/typed/k8s.cni.cncf.io/v1"
 	netutils "github.com/k8snetworkplumbingwg/network-attachment-definition-client/pkg/utils"
+	spiderclient "github.com/spidernet-io/spiderpool/pkg/k8s/client/clientset/versioned"
 	"gopkg.in/k8snetworkplumbingwg/multus-cni.v3/pkg/kubeletclient"
 	"gopkg.in/k8snetworkplumbingwg/multus-cni.v3/pkg/logging"
 	"gopkg.in/k8snetworkplumbingwg/multus-cni.v3/pkg/types"
@@ -61,6 +69,7 @@ type NoK8sNetworkError struct {
 type ClientInfo struct {
 	Client           kubernetes.Interface
 	NetClient        netclient.K8sCniCncfIoV1Interface
+	SpiderClient     spiderclient.Interface
 	EventBroadcaster record.EventBroadcaster
 	EventRecorder    record.EventRecorder
 }
@@ -83,6 +92,39 @@ func (c *ClientInfo) DeletePod(namespace, name string) error {
 // AddNetAttachDef adds net-attach-def into kubernetes
 func (c *ClientInfo) AddNetAttachDef(netattach *nettypes.NetworkAttachmentDefinition) (*nettypes.NetworkAttachmentDefinition, error) {
 	return c.NetClient.NetworkAttachmentDefinitions(netattach.ObjectMeta.Namespace).Create(context.TODO(), netattach, metav1.CreateOptions{})
+}
+
+func (c *ClientInfo) GetSpiderClaimParameter(name, namespace string) (*spider_types.SpiderClaimParameter, error) {
+	return c.SpiderClient.SpiderpoolV2beta1().SpiderClaimParameters(namespace).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func (c *ClientInfo) GetResourceTemplate(name, namespace string) (*resourcev1alpha2.ResourceClaimTemplate, error) {
+	return c.Client.ResourceV1alpha2().ResourceClaimTemplates(namespace).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func (c *ClientInfo) GetResourceClaim(name, namespace string) (*resourcev1alpha2.ResourceClaim, error) {
+	return c.Client.ResourceV1alpha2().ResourceClaims(namespace).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func (c *ClientInfo) ListSpiderMultusConfig(opts metav1.ListOptions) (*spider_types.SpiderMultusConfigList, error) {
+	return c.SpiderClient.SpiderpoolV2beta1().SpiderMultusConfigs(metav1.NamespaceAll).List(context.TODO(), opts)
+}
+
+func (c *ClientInfo) GetSpiderMultusConfig(name, namespace string) (*spider_types.SpiderMultusConfig, error) {
+	return c.SpiderClient.SpiderpoolV2beta1().SpiderMultusConfigs(namespace).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func (c *ClientInfo) IsDynamicResourceAllocationEnabled() (bool, error) {
+	_, err := c.Client.Discovery().ServerResourcesForGroupVersion(resourcev1alpha2.SchemeGroupVersion.String())
+	if err == nil {
+		return true, nil
+	}
+
+	if apierrors.IsNotFound(err) {
+		return false, nil
+	}
+
+	return false, err
 }
 
 // Eventf puts event into kubernetes events
@@ -428,6 +470,11 @@ func GetK8sClient(kubeconfig string, kubeClient *ClientInfo) (*ClientInfo, error
 		return nil, err
 	}
 
+	spiderclient, err := spiderclient.NewForConfig(config)
+	if err != nil {
+		return nil, err
+	}
+
 	broadcaster := record.NewBroadcaster()
 	broadcaster.StartLogging(klog.Infof)
 	broadcaster.StartRecordingToSink(&v1core.EventSinkImpl{Interface: client.CoreV1().Events("")})
@@ -436,6 +483,7 @@ func GetK8sClient(kubeconfig string, kubeClient *ClientInfo) (*ClientInfo, error
 	return &ClientInfo{
 		Client:           client,
 		NetClient:        netclient,
+		SpiderClient:     spiderclient,
 		EventBroadcaster: broadcaster,
 		EventRecorder:    recorder,
 	}, nil

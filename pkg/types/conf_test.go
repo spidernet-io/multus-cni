@@ -23,7 +23,7 @@ import (
 	"testing"
 
 	"github.com/containernetworking/cni/pkg/skel"
-	types020 "github.com/containernetworking/cni/pkg/types/020"
+	current "github.com/containernetworking/cni/pkg/types/100"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/containernetworking/plugins/pkg/testutils"
 	netutils "github.com/k8snetworkplumbingwg/network-attachment-definition-client/pkg/utils"
@@ -679,10 +679,11 @@ var _ = Describe("config operations", func() {
 	})
 
 	It("can loadnetworkstatus", func() {
-		result := &types020.Result{
-			CNIVersion: "0.2.0",
-			IP4: &types020.IPConfig{
-				IP: *testhelpers.EnsureCIDR("1.1.1.2/24"),
+		result := &current.Result{
+			CNIVersion: "1.0.0",
+			IPs: []*current.IPConfig{{
+				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
+			},
 			},
 		}
 
@@ -714,8 +715,8 @@ var _ = Describe("config operations", func() {
 
 		result := &testhelpers.Result{
 			CNIVersion: "1.2.3",
-			IP4: &types020.IPConfig{
-				IP: *testhelpers.EnsureCIDR("1.1.1.2/24"),
+			IP4: &current.IPConfig{
+				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
 			},
 		}
 

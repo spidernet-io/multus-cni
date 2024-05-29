@@ -13,6 +13,11 @@
 // limitations under the License.
 //
 
+// Copyright 2024 Authors of spidernet-io
+// SPDX-License-Identifier: Apache-2.0
+// spidernet-io team update the file for spiderpool dra feature
+// at 06,21,2024
+
 package multus
 
 import (
@@ -30,7 +35,7 @@ import (
 	"github.com/containernetworking/cni/pkg/skel"
 	cnitypes "github.com/containernetworking/cni/pkg/types"
 	types020 "github.com/containernetworking/cni/pkg/types/020"
-	current "github.com/containernetworking/cni/pkg/types/current"
+	types040 "github.com/containernetworking/cni/pkg/types/040"
 	cniversion "github.com/containernetworking/cni/pkg/version"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/containernetworking/plugins/pkg/testutils"
@@ -77,7 +82,7 @@ func newFakeExec() *fakeExec {
 	}
 }
 
-func (f *fakeExec) addPlugin(expectedEnv []string, expectedIfname, expectedConf string, result *current.Result, err error) {
+func (f *fakeExec) addPlugin(expectedEnv []string, expectedIfname, expectedConf string, result *types040.Result, err error) {
 	f.plugins[expectedIfname] = &fakePlugin{
 		expectedEnv:    expectedEnv,
 		expectedConf:   expectedConf,
@@ -731,9 +736,9 @@ var _ = Describe("multus operations cniVersion 0.2.0 config", func() {
 		}
 
 		fExec := newFakeExec()
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: resultCNIVersion,
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
 			},
 			},
@@ -776,9 +781,9 @@ var _ = Describe("multus operations cniVersion 0.2.0 config", func() {
 		"cniVersion": "0.3.1"
 	}`
 		fExec.addPlugin(nil, "eth0", expectedConf1, expectedResult1, nil)
-		fExec.addPlugin(nil, "net1", expectedNet1, &current.Result{
+		fExec.addPlugin(nil, "net1", expectedNet1, &types040.Result{
 			CNIVersion: "0.3.1",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.3/24"),
 			},
 			},
@@ -796,7 +801,7 @@ var _ = Describe("multus operations cniVersion 0.2.0 config", func() {
 		result, err := CmdAdd(args, fExec, clientInfo)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(fExec.addIndex).To(Equal(len(fExec.plugins)))
-		r := result.(*current.Result)
+		r := result.(*types040.Result)
 		// plugin 1 is the masterplugin
 		Expect(reflect.DeepEqual(r, expectedResult1)).To(BeTrue())
 	})
@@ -864,9 +869,9 @@ var _ = Describe("multus operations cniVersion 0.2.0 config", func() {
 		}
 
 		fExec := newFakeExec()
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: resultCNIVersion,
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
 			},
 			},
@@ -882,9 +887,9 @@ var _ = Describe("multus operations cniVersion 0.2.0 config", func() {
 		"cniVersion": "0.3.1"
 	}`
 		fExec.addPlugin(nil, "eth0", expectedConf1, expectedResult1, nil)
-		fExec.addPlugin(nil, "net1", expectedNet1, &current.Result{
+		fExec.addPlugin(nil, "net1", expectedNet1, &types040.Result{
 			CNIVersion: "0.3.1",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.3/24"),
 			},
 			},
@@ -902,7 +907,7 @@ var _ = Describe("multus operations cniVersion 0.2.0 config", func() {
 		result, err := CmdAdd(args, fExec, clientInfo)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(fExec.addIndex).To(Equal(len(fExec.plugins)))
-		r := result.(*current.Result)
+		r := result.(*types040.Result)
 		// plugin 1 is the masterplugin
 		Expect(reflect.DeepEqual(r, expectedResult1)).To(BeTrue())
 	})
@@ -927,9 +932,9 @@ var _ = Describe("multus operations cniVersion 0.2.0 config", func() {
 		}
 
 		fExec := newFakeExec()
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: resultCNIVersion,
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
 			},
 			},
@@ -954,7 +959,7 @@ var _ = Describe("multus operations cniVersion 0.2.0 config", func() {
 		result, err := CmdAdd(args, fExec, clientInfo)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(fExec.addIndex).To(Equal(len(fExec.plugins)))
-		r := result.(*current.Result)
+		r := result.(*types040.Result)
 		// plugin 1 is the masterplugin
 		Expect(reflect.DeepEqual(r, expectedResult1)).To(BeTrue())
 	})
@@ -979,9 +984,9 @@ var _ = Describe("multus operations cniVersion 0.2.0 config", func() {
 		}
 
 		fExec := newFakeExec()
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: resultCNIVersion,
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
 			},
 			},
@@ -1006,7 +1011,7 @@ var _ = Describe("multus operations cniVersion 0.2.0 config", func() {
 		result, err := CmdAdd(args, fExec, clientInfo)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(fExec.addIndex).To(Equal(len(fExec.plugins)))
-		r := result.(*current.Result)
+		r := result.(*types040.Result)
 		// plugin 1 is the masterplugin
 		Expect(reflect.DeepEqual(r, expectedResult1)).To(BeTrue())
 	})
@@ -1708,9 +1713,9 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 		logging.SetLogLevel("verbose")
 
 		fExec := newFakeExec()
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
 			},
 			},
@@ -1722,9 +1727,9 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 	}`
 		fExec.addPlugin(nil, "eth0", expectedConf1, expectedResult1, nil)
 
-		expectedResult2 := &current.Result{
+		expectedResult2 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.5/24"),
 			},
 			},
@@ -1775,9 +1780,9 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 		// Netns is given garbage value
 
 		fExec := newFakeExec()
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
 			},
 			},
@@ -1789,12 +1794,11 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 	}`
 		fExec.addPlugin(nil, "eth0", expectedConf1, expectedResult1, nil)
 
-		expectedResult2 := &current.Result{
+		expectedResult2 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.5/24"),
-			},
-			},
+			}},
 		}
 		expectedConf2 := `{
 	    "name": "other1",
@@ -1840,9 +1844,9 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 		logging.SetLogLevel("verbose")
 
 		fExec := newFakeExec()
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
 			},
 			},
@@ -1854,12 +1858,11 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 	}`
 		fExec.addPlugin(nil, "eth0", expectedConf1, expectedResult1, nil)
 
-		expectedResult2 := &current.Result{
+		expectedResult2 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.5/24"),
-			},
-			},
+			}},
 		}
 		expectedConf2 := `{
 	    "name": "other1",
@@ -1907,12 +1910,11 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 		// Missing close bracket in StdinData
 
 		fExec := newFakeExec()
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
-			},
-			},
+			}},
 		}
 		expectedConf1 := `{
 	    "name": "weave1",
@@ -1921,12 +1923,11 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 	}`
 		fExec.addPlugin(nil, "eth0", expectedConf1, expectedResult1, nil)
 
-		expectedResult2 := &current.Result{
+		expectedResult2 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.5/24"),
-			},
-			},
+			}},
 		}
 		expectedConf2 := `{
 	    "name": "other1",
@@ -1967,12 +1968,11 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 		}
 
 		fExec := newFakeExec()
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
-			},
-			},
+			}},
 		}
 		fExec.addPlugin(nil, "eth0", expectedConf1, expectedResult1, nil)
 
@@ -2013,12 +2013,11 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 		}
 
 		fExec := newFakeExec()
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
-			},
-			},
+			}},
 		}
 		fExec.addPlugin(nil, "eth0", expectedConf1, expectedResult1, nil)
 
@@ -2076,12 +2075,11 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 		}
 
 		fExec := newFakeExec()
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: resultCNIVersion,
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
-			},
-			},
+			}},
 		}
 		expectedConf1 := `{
 	    "name": "weave1",
@@ -2121,9 +2119,9 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 		"cniVersion": "0.4.0"
 	}`
 		fExec.addPlugin(nil, "eth0", expectedConf1, expectedResult1, nil)
-		fExec.addPlugin(nil, "net1", expectedNet1, &current.Result{
+		fExec.addPlugin(nil, "net1", expectedNet1, &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.3/24"),
 			},
 			},
@@ -2141,7 +2139,7 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 		result, err := CmdAdd(args, fExec, clientInfo)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(fExec.addIndex).To(Equal(len(fExec.plugins)))
-		r := result.(*current.Result)
+		r := result.(*types040.Result)
 		// plugin 1 is the masterplugin
 		Expect(reflect.DeepEqual(r, expectedResult1)).To(BeTrue())
 
@@ -2182,12 +2180,11 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 		}
 
 		fExec := newFakeExec()
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
-			},
-			},
+			}},
 		}
 		expectedConf1 := `{
 	    "name": "weave1",
@@ -2195,16 +2192,16 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 	    "type": "weave-net"
 	}`
 		fExec.addPlugin(nil, "eth0", expectedConf1, expectedResult1, nil)
-		fExec.addPlugin(nil, "net1", net1, &current.Result{
+		fExec.addPlugin(nil, "net1", net1, &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.3/24"),
 			},
 			},
 		}, nil)
-		fExec.addPlugin(nil, "net2", net2, &current.Result{
+		fExec.addPlugin(nil, "net2", net2, &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.4/24"),
 			},
 			},
@@ -2258,12 +2255,11 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 		}
 
 		fExec := newFakeExec()
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
-			},
-			},
+			}},
 		}
 		expectedConf1 := `{
 	    "name": "weave1",
@@ -2271,12 +2267,11 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 	    "type": "weave-net"
 	}`
 		fExec.addPlugin(nil, "eth0", expectedConf1, expectedResult1, nil)
-		fExec.addPlugin(nil, "net1", net1, &current.Result{
+		fExec.addPlugin(nil, "net1", net1, &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
-				Address: *testhelpers.EnsureCIDR("1.1.1.3/24"),
-			},
-			},
+			IPs: []*types040.IPConfig{{
+				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
+			}},
 		}, nil)
 
 		clientInfo := NewFakeClientInfo()
@@ -2326,9 +2321,9 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 		}
 
 		fExec := newFakeExec()
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
 			},
 			},
@@ -2339,9 +2334,9 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 	    "type": "weave-net"
 	}`
 		fExec.addPlugin(nil, "eth0", expectedConf1, expectedResult1, nil)
-		fExec.addPlugin(nil, "net1", net1, &current.Result{
+		fExec.addPlugin(nil, "net1", net1, &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.3/24"),
 			},
 			},
@@ -2391,9 +2386,9 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 		}
 
 		fExec := newFakeExec()
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
 			},
 			},
@@ -2404,9 +2399,9 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 	    "type": "weave-net"
 	}`
 		fExec.addPlugin(nil, "eth0", expectedConf1, expectedResult1, nil)
-		fExec.addPlugin(nil, "net1", net1, &current.Result{
+		fExec.addPlugin(nil, "net1", net1, &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.3/24"),
 			},
 			},
@@ -2481,9 +2476,9 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 		"type": "mynet",
 		"cniVersion": "0.4.0"
 	}`
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
 			},
 			},
@@ -2551,9 +2546,9 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 		}
 
 		fExec := newFakeExec()
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
 			},
 			},
@@ -2564,9 +2559,9 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 	    "type": "weave-net"
 	}`
 		fExec.addPlugin(nil, "eth0", expectedConf1, expectedResult1, nil)
-		fExec.addPlugin(nil, "net1", net1, &current.Result{
+		fExec.addPlugin(nil, "net1", net1, &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.3/24"),
 			},
 			},
@@ -2624,9 +2619,9 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 		}
 
 		fExec := newFakeExec()
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
 			},
 			},
@@ -2637,9 +2632,9 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 	    "type": "weave-net"
 	}`
 		fExec.addPlugin(nil, "eth0", expectedConf1, expectedResult1, nil)
-		fExec.addPlugin(nil, "net1", net1, &current.Result{
+		fExec.addPlugin(nil, "net1", net1, &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.3/24"),
 			},
 			},
@@ -2693,9 +2688,9 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 		}
 
 		fExec := newFakeExec()
-		expectedResult1 := &current.Result{
+		expectedResult1 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.2/24"),
 			},
 			},
@@ -2707,9 +2702,9 @@ var _ = Describe("multus operations cniVersion 0.4.0 config", func() {
 	}`
 		fExec.addPlugin(nil, "eth0", expectedConf1, expectedResult1, nil)
 
-		expectedResult2 := &current.Result{
+		expectedResult2 := &types040.Result{
 			CNIVersion: "0.4.0",
-			IPs: []*current.IPConfig{{
+			IPs: []*types040.IPConfig{{
 				Address: *testhelpers.EnsureCIDR("1.1.1.5/24"),
 			},
 			},

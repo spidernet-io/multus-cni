@@ -29,7 +29,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/containernetworking/cni/pkg/types"
-	types020 "github.com/containernetworking/cni/pkg/types/020"
+	types100 "github.com/containernetworking/cni/pkg/types/100"
 
 	"github.com/onsi/gomega"
 )
@@ -117,8 +117,8 @@ func EnsureCIDR(cidr string) *net.IPNet {
 // Result is stub Result for testing
 type Result struct {
 	CNIVersion string             `json:"cniVersion,omitempty"`
-	IP4        *types020.IPConfig `json:"ip4,omitempty"`
-	IP6        *types020.IPConfig `json:"ip6,omitempty"`
+	IP4        *types100.IPConfig `json:"ip4,omitempty"`
+	IP6        *types100.IPConfig `json:"ip6,omitempty"`
 	DNS        types.DNS          `json:"dns,omitempty"`
 }
 
@@ -128,14 +128,16 @@ func (r *Result) Version() string {
 }
 
 // GetAsVersion returns a Result object given a version
+var supportedVersions = []string{"1.0.0", "1.1.0"}
+
 func (r *Result) GetAsVersion(version string) (types.Result, error) {
-	for _, supportedVersion := range types020.SupportedVersions {
+	for _, supportedVersion := range supportedVersions {
 		if version == supportedVersion {
 			r.CNIVersion = version
 			return r, nil
 		}
 	}
-	return nil, fmt.Errorf("cannot convert version %q to %s", types020.SupportedVersions, version)
+	return nil, fmt.Errorf("cannot convert version %q to %s", supportedVersions, version)
 }
 
 // Print prints a Result's information to std out
