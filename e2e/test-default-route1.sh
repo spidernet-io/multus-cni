@@ -4,7 +4,7 @@ set -o errexit
 export PATH=${PATH}:./bin
 
 kubectl create -f default-route1.yml
-kubectl wait --for=condition=ready -l app=default-route1 --timeout=300s pod
+kubectl wait --for=condition=ready -l app=default-route1 --timeout=300s pod || kubectl describe po -l app=default-route1 
 
 echo "check default-route-worker1 interface: net1"
 kubectl exec default-route-worker1 -- ip a show dev net1

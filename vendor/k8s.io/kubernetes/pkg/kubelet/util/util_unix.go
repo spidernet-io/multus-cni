@@ -1,3 +1,4 @@
+//go:build freebsd || linux || darwin
 // +build freebsd linux darwin
 
 /*
@@ -21,7 +22,6 @@ package util
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/url"
 	"os"
@@ -57,7 +57,7 @@ func CreateListener(endpoint string) (net.Listener, error) {
 	}
 
 	// Create the socket on a tempfile and move it to the destination socket to handle improper cleanup
-	file, err := ioutil.TempFile(filepath.Dir(addr), "")
+	file, err := os.CreateTemp(filepath.Dir(addr), "")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create temporary file: %v", err)
 	}
@@ -100,7 +100,7 @@ func parseEndpointWithFallbackProtocol(endpoint string, fallbackProtocol string)
 		fallbackEndpoint := fallbackProtocol + "://" + endpoint
 		protocol, addr, err = parseEndpoint(fallbackEndpoint)
 		if err == nil {
-			klog.Warningf("Using %q as endpoint is deprecated, please consider using full url format %q.", endpoint, fallbackEndpoint)
+			klog.InfoS("Using this endpoint is deprecated, please consider using full URL format", "endpoint", endpoint, "URL", fallbackEndpoint)
 		}
 	}
 	return
@@ -134,18 +134,6 @@ func LocalEndpoint(path, file string) (string, error) {
 		Path:   path,
 	}
 	return filepath.Join(u.String(), file+".sock"), nil
-}
-
-// IsUnixDomainSocket returns whether a given file is a AF_UNIX socket file
-func IsUnixDomainSocket(filePath string) (bool, error) {
-	fi, err := os.Stat(filePath)
-	if err != nil {
-		return false, fmt.Errorf("stat file %s failed: %v", filePath, err)
-	}
-	if fi.Mode()&os.ModeSocket == 0 {
-		return false, nil
-	}
-	return true, nil
 }
 
 // NormalizePath is a no-op for Linux for now

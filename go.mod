@@ -1,6 +1,6 @@
 module gopkg.in/k8snetworkplumbingwg/multus-cni.v3
 
-go 1.22
+go 1.22.0
 
 require (
 	github.com/blang/semver v3.5.1+incompatible
@@ -11,7 +11,7 @@ require (
 	github.com/onsi/ginkgo v1.16.4
 	github.com/onsi/gomega v1.29.0
 	github.com/pkg/errors v0.9.1
-	github.com/vishvananda/netlink v1.1.1-0.20201029203352-d40f9887b852
+	github.com/vishvananda/netlink v1.2.1-beta.2.0.20240524165444-4d4ba1473f21
 	golang.org/x/net v0.19.0
 	google.golang.org/grpc v1.58.3
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
@@ -19,12 +19,12 @@ require (
 	k8s.io/apimachinery v0.29.2
 	k8s.io/client-go v0.29.2
 	k8s.io/klog v1.0.0
-	k8s.io/kubelet v0.0.0
+	k8s.io/kubelet v0.29.2
 	k8s.io/kubernetes v1.29.2
 )
 
 require (
-	github.com/Microsoft/go-winio v0.4.15 // indirect
+	github.com/Microsoft/go-winio v0.6.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
@@ -56,12 +56,14 @@ require (
 	github.com/prometheus/common v0.44.0 // indirect
 	github.com/prometheus/procfs v0.10.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/vishvananda/netns v0.0.0-20200728191858-db3c7e526aae // indirect
+	github.com/vishvananda/netns v0.0.4 // indirect
+	golang.org/x/mod v0.14.0 // indirect
 	golang.org/x/oauth2 v0.10.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/term v0.15.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
+	golang.org/x/tools v0.16.1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
@@ -69,6 +71,7 @@ require (
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	k8s.io/apiextensions-apiserver v0.0.0 // indirect
 	k8s.io/apiserver v0.29.2 // indirect
 	k8s.io/component-base v0.29.2 // indirect
 	k8s.io/klog/v2 v2.110.1 // indirect
@@ -101,7 +104,7 @@ replace (
 	k8s.io/kube-scheduler => k8s.io/kube-scheduler v0.29.2
 	k8s.io/kubectl => k8s.io/kubectl v0.29.2
 	k8s.io/kubelet => k8s.io/kubelet v0.29.2
-	k8s.io/kubernetes => k8s.io/kubernetes v1.20.10
+	k8s.io/kubernetes => k8s.io/kubernetes v1.29.2
 	k8s.io/legacy-cloud-providers => k8s.io/legacy-cloud-providers v0.29.2
 	k8s.io/metrics => k8s.io/metrics v0.29.2
 	k8s.io/mount-utils => k8s.io/mount-utils v0.29.2

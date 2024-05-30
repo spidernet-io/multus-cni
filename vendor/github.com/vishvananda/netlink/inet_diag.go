@@ -27,4 +27,10 @@ const (
 type InetDiagTCPInfoResp struct {
 	InetDiagMsg *Socket
 	TCPInfo     *TCPInfo
+	TCPBBRInfo  *TCPBBRInfo
+}
+
+type InetDiagUDPInfoResp struct {
+	InetDiagMsg *Socket
+	Memory      *MemInfo
 }
