@@ -12,13 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Copyright 2024 Authors of spidernet-io
+// SPDX-License-Identifier: Apache-2.0
+// spidernet-io team update the file for spiderpool dra feature
+// at 06,21,2024
+
 package multus
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"path/filepath"
@@ -29,7 +33,7 @@ import (
 	"github.com/containernetworking/cni/pkg/invoke"
 	"github.com/containernetworking/cni/pkg/skel"
 	cnitypes "github.com/containernetworking/cni/pkg/types"
-	cnicurrent "github.com/containernetworking/cni/pkg/types/current"
+	current "github.com/containernetworking/cni/pkg/types/100"
 	"github.com/containernetworking/plugins/pkg/ns"
 	nettypes "github.com/k8snetworkplumbingwg/network-attachment-definition-client/pkg/apis/k8s.cni.cncf.io/v1"
 	nadutils "github.com/k8snetworkplumbingwg/network-attachment-definition-client/pkg/utils"
@@ -42,6 +46,7 @@ import (
 	k8s "gopkg.in/k8snetworkplumbingwg/multus-cni.v3/pkg/k8sclient"
 	"gopkg.in/k8snetworkplumbingwg/multus-cni.v3/pkg/logging"
 	"gopkg.in/k8snetworkplumbingwg/multus-cni.v3/pkg/netutils"
+	"gopkg.in/k8snetworkplumbingwg/multus-cni.v3/pkg/spiderpool"
 	"gopkg.in/k8snetworkplumbingwg/multus-cni.v3/pkg/types"
 )
 
@@ -75,7 +80,7 @@ func saveScratchNetConf(containerID, dataDir string, netconf []byte) error {
 
 	path := filepath.Join(dataDir, containerID)
 
-	err := ioutil.WriteFile(path, netconf, 0600)
+	err := os.WriteFile(path, netconf, 0600)
 	if err != nil {
 		return logging.Errorf("saveScratchNetConf: failed to write container data in the path(%q): %v", path, err)
 	}
@@ -87,7 +92,7 @@ func consumeScratchNetConf(containerID, dataDir string) ([]byte, string, error) 
 	logging.Debugf("consumeScratchNetConf: %s, %s", containerID, dataDir)
 	path := filepath.Join(dataDir, containerID)
 
-	b, err := ioutil.ReadFile(path)
+	b, err := os.ReadFile(path)
 	return b, path, err
 }
 
@@ -357,7 +362,7 @@ func delegateAdd(exec invoke.Exec, kubeClient *k8s.ClientInfo, pod *v1.Pod, dele
 
 	// get IP addresses from result
 	ips := []string{}
-	res, err := cnicurrent.NewResultFromResult(result)
+	res, err := current.NewResultFromResult(result)
 	if err != nil {
 		logging.Errorf("delegateAdd: error converting result: %v", err)
 		return result, nil
@@ -485,7 +490,6 @@ func cmdErr(k8sArgs *types.K8sArgs, format string, args ...interface{}) error {
 	}
 	return logging.Errorf(prefix+format, args...)
 }
-
 func cmdPluginErr(k8sArgs *types.K8sArgs, confName string, format string, args ...interface{}) error {
 	msg := ""
 	if k8sArgs != nil {
@@ -584,6 +588,12 @@ func CmdAdd(args *skel.CmdArgs, exec invoke.Exec, kubeClient *k8s.ClientInfo) (c
 		return nil, err
 	}
 
+	// if the pod is configure the resourcecliams with spiderclaimparameter, we translate the resouceclaim
+	// to multus annotaions
+	if err = spiderpool.ConvertResourceClaimToAnnotations(kubeClient, pod); err != nil {
+		return nil, err
+	}
+
 	// resourceMap holds Pod device allocation information; only initizized if CRD contains 'resourceName' annotation.
 	// This will only be initialized once and all delegate objects can reference this to look up device info.
 	var resourceMap map[string]*types.ResourceInfo
@@ -639,7 +649,7 @@ func CmdAdd(args *skel.CmdArgs, exec invoke.Exec, kubeClient *k8s.ClientInfo) (c
 			result = tmpResult
 		}
 
-		res, err := cnicurrent.NewResultFromResult(tmpResult)
+		res, err := current.NewResultFromResult(tmpResult)
 		if err != nil {
 			logging.Errorf("CmdAdd: failed to read result: %v, but proceed", err)
 		}

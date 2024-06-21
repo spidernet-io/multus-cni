@@ -19,14 +19,15 @@ import (
 	"gopkg.in/k8snetworkplumbingwg/multus-cni.v3/pkg/logging"
 	"net"
 
-	"github.com/containernetworking/cni/pkg/types"
-	"github.com/containernetworking/cni/pkg/types/current"
+	cnitypes "github.com/containernetworking/cni/pkg/types"
+	current "github.com/containernetworking/cni/pkg/types/100"
+
 	v1 "k8s.io/api/core/v1"
 )
 
 // NetConf for cni config file written in json
 type NetConf struct {
-	types.NetConf
+	cnitypes.NetConf
 
 	// support chaining for master interface and IP decisions
 	// occurring prior to running ipvlan plugin
@@ -90,8 +91,8 @@ type BandwidthEntry struct {
 
 // DelegateNetConf for net-attach-def for pod
 type DelegateNetConf struct {
-	Conf                  types.NetConf
-	ConfList              types.NetConfList
+	Conf                  cnitypes.NetConf
+	ConfList              cnitypes.NetConfList
 	Name                  string
 	IfnameRequest         string          `json:"ifnameRequest,omitempty"`
 	MacRequest            string          `json:"macRequest,omitempty"`
@@ -155,12 +156,12 @@ type NetworkSelectionElement struct {
 
 // K8sArgs is the valid CNI_ARGS used for Kubernetes
 type K8sArgs struct {
-	types.CommonArgs
+	cnitypes.CommonArgs
 	IP                         net.IP
-	K8S_POD_NAME               types.UnmarshallableString //revive:disable-line
-	K8S_POD_NAMESPACE          types.UnmarshallableString //revive:disable-line
-	K8S_POD_INFRA_CONTAINER_ID types.UnmarshallableString //revive:disable-line
-	K8S_POD_UID                types.UnmarshallableString //revive:disable-line
+	K8S_POD_NAME               cnitypes.UnmarshallableString //revive:disable-line
+	K8S_POD_NAMESPACE          cnitypes.UnmarshallableString //revive:disable-line
+	K8S_POD_INFRA_CONTAINER_ID cnitypes.UnmarshallableString //revive:disable-line
+	K8S_POD_UID                cnitypes.UnmarshallableString //revive:disable-line
 }
 
 // ResourceInfo is struct to hold Pod device allocation information
