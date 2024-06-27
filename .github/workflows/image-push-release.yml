@@ -135,7 +135,7 @@ jobs:
     name: Image push/ppc64le
     runs-on: ubuntu-latest
     steps:
-       - name: Check out code into the Go module directory
+      - name: Check out code into the Go module directory
         uses: actions/checkout@v3
 
       - name: Set up QEMU
@@ -175,7 +175,7 @@ jobs:
     name: Image push/s390x
     runs-on: ubuntu-latest
     steps:
-       - name: Check out code into the Go module directory
+      - name: Check out code into the Go module directory
         uses: actions/checkout@v3
 
       - name: Set up QEMU
@@ -215,7 +215,7 @@ jobs:
     name: Image push/origin
     runs-on: ubuntu-latest
     steps:
-       - name: Check out code into the Go module directory
+      - name: Check out code into the Go module directory
         uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
