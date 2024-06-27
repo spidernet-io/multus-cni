@@ -64,15 +64,18 @@ func spiderClaimParameterToAnnotations(kubeClient *k8s.ClientInfo, scp *spider_t
 	}
 
 	for idx, nic := range scp.Spec.StaticNics {
-		ns, name := splitStaticNic(nic)
 		if kubeClient != nil {
-			_, err := kubeClient.GetSpiderMultusConfig(name, ns)
+			_, err := kubeClient.GetSpiderMultusConfig(nic.MultusConfigName, nic.Namespace)
 			if err != nil {
-				return fmt.Errorf("get spiderMultusConfig %s/%s failed: %v", ns, name, err)
+				return fmt.Errorf("get spiderMultusConfig %s/%s failed: %v", nic.MultusConfigName, nic.Namespace, err)
 			}
 		}
 
-		value := fmt.Sprintf("%s/%s", ns, name)
+		if nic.Namespace == "" {
+			nic.Namespace = metav1.NamespaceDefault
+		}
+
+		value := fmt.Sprintf("%s/%s", nic.Namespace, nic.MultusConfigName)
 		if idx == 0 {
 			pod.Annotations[constant.MultusDefaultNetAnnot] = value
 			continue

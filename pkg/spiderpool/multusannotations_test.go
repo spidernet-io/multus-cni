@@ -28,7 +28,13 @@ var _ = Describe("Spiderpool", func() {
 					Namespace: "test-ns",
 				},
 				Spec: spider_types.ClaimParameterSpec{
-					StaticNics: []string{"nad1", "kube-system/nad2"},
+					StaticNics: []spider_types.StaticNic{{
+						MultusConfigName: "nad1",
+						Namespace:        "",
+					}, {
+						MultusConfigName: "nad2",
+						Namespace:        "kube-system",
+					}},
 				},
 			}
 
@@ -47,7 +53,13 @@ var _ = Describe("Spiderpool", func() {
 					Namespace: "test-ns",
 				},
 				Spec: spider_types.ClaimParameterSpec{
-					StaticNics: []string{"kube-system/nad3", "kube-system/nad4"},
+					StaticNics: []spider_types.StaticNic{{
+						MultusConfigName: "nad3",
+						Namespace:        "kube-system",
+					}, {
+						MultusConfigName: "nad4",
+						Namespace:        "kube-system",
+					}},
 				},
 			}
 
