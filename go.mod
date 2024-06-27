@@ -11,7 +11,7 @@ require (
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.32.0
 	github.com/pkg/errors v0.9.1
-	github.com/spidernet-io/spiderpool v1.0.0-rc0.0.20240621071531-5ad1b77a216e
+	github.com/spidernet-io/spiderpool v1.0.0-rc0.0.20240627110505-5ff6c824d83e
 	github.com/vishvananda/netlink v1.2.1-beta.2.0.20240524165444-4d4ba1473f21
 	golang.org/x/net v0.26.0
 	google.golang.org/grpc v1.58.3

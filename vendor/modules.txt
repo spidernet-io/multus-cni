@@ -237,7 +237,7 @@ github.com/prometheus/procfs/internal/util
 # github.com/spf13/pflag v1.0.5
 ## explicit; go 1.12
 github.com/spf13/pflag
-# github.com/spidernet-io/spiderpool v1.0.0-rc0.0.20240621071531-5ad1b77a216e
+# github.com/spidernet-io/spiderpool v1.0.0-rc0.0.20240627110505-5ff6c824d83e
 ## explicit; go 1.22.0
 github.com/spidernet-io/spiderpool/api/v1/agent/models
 github.com/spidernet-io/spiderpool/pkg/constant
