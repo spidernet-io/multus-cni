@@ -102,6 +102,7 @@ jobs:
       - name: Push container image
         if: github.repository_owner == 'k8snetworkplumbingwg'
         uses: docker/build-push-action@v4
+        with:
           context: .
           push: true
           platforms: linux/arm32
