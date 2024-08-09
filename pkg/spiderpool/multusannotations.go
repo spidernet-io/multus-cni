@@ -30,6 +30,7 @@ func ConvertResourceClaimToAnnotations(kubeClient *k8s.ClientInfo, pod *v1.Pod) 
 		return nil
 	}
 
+	logging.Debugf("Try to convert ResourceClaim to annotations for pod %s/%s", pod.Namespace, pod.Name)
 	for _, rc := range pod.Spec.ResourceClaims {
 		if rc.Source.ResourceClaimTemplateName != nil {
 			rct, err := kubeClient.GetResourceTemplate(*rc.Source.ResourceClaimTemplateName, pod.Namespace)
@@ -52,34 +53,33 @@ func ConvertResourceClaimToAnnotations(kubeClient *k8s.ClientInfo, pod *v1.Pod) 
 func spiderClaimParameterToAnnotations(kubeClient *k8s.ClientInfo, scp *spider_types.SpiderClaimParameter, pod *v1.Pod) error {
 	if pod.Annotations == nil {
 		pod.Annotations = make(map[string]string)
-	} else {
-		logging.Debugf("Warning! pod's multus annotations: %v will be overwrite by spidercliamparameter %s/%s", pod.Annotations, scp.Namespace, scp.Name)
+	}
+
+	logging.Debugf("Warning! pod's multus annotations: %v will be overwrite by spidercliamparameter %s/%s", pod.Annotations, scp.Namespace, scp.Name)
+	if _, ok := pod.Annotations[constant.MultusNetworkAttachmentAnnot]; ok {
+		delete(pod.Annotations, constant.MultusNetworkAttachmentAnnot)
+	}
+
+	if scp.Spec.DefaultNic != nil {
 		if _, ok := pod.Annotations[constant.MultusDefaultNetAnnot]; ok {
 			delete(pod.Annotations, constant.MultusDefaultNetAnnot)
 		}
-
-		if _, ok := pod.Annotations[constant.MultusNetworkAttachmentAnnot]; ok {
-			delete(pod.Annotations, constant.MultusNetworkAttachmentAnnot)
-		}
+		pod.Annotations[constant.MultusDefaultNetAnnot] = fmt.Sprintf("%s/%s", scp.Spec.DefaultNic.Namespace, scp.Spec.DefaultNic.MultusName)
 	}
 
-	for idx, nic := range scp.Spec.StaticNics {
+	for _, nic := range scp.Spec.SecondaryNics {
 		if kubeClient != nil {
-			_, err := kubeClient.GetSpiderMultusConfig(nic.MultusConfigName, nic.Namespace)
+			_, err := kubeClient.GetSpiderMultusConfig(nic.MultusName, nic.Namespace)
 			if err != nil {
-				return fmt.Errorf("get spiderMultusConfig %s/%s failed: %v", nic.MultusConfigName, nic.Namespace, err)
+				return fmt.Errorf("get spiderMultusConfig %s/%s failed: %v", nic.Namespace, nic.MultusName, err)
 			}
 		}
 
 		if nic.Namespace == "" {
-			nic.Namespace = metav1.NamespaceDefault
+			nic.Namespace = metav1.NamespaceSystem
 		}
 
-		value := fmt.Sprintf("%s/%s", nic.Namespace, nic.MultusConfigName)
-		if idx == 0 {
-			pod.Annotations[constant.MultusDefaultNetAnnot] = value
-			continue
-		}
+		value := fmt.Sprintf("%s/%s", nic.Namespace, nic.MultusName)
 
 		if v, ok := pod.Annotations[constant.MultusNetworkAttachmentAnnot]; ok {
 			pod.Annotations[constant.MultusNetworkAttachmentAnnot] = fmt.Sprintf("%v,%s", v, value)
