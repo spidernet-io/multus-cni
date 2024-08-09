@@ -28,12 +28,13 @@ var _ = Describe("Spiderpool", func() {
 					Namespace: "test-ns",
 				},
 				Spec: spider_types.ClaimParameterSpec{
-					StaticNics: []spider_types.StaticNic{{
-						MultusConfigName: "nad1",
-						Namespace:        "",
-					}, {
-						MultusConfigName: "nad2",
-						Namespace:        "kube-system",
+					DefaultNic: &spider_types.MultusConfig{
+						MultusName: "nad1",
+						Namespace:  "",
+					},
+					SecondaryNics: []spider_types.MultusConfig{{
+						MultusName: "nad2",
+						Namespace:  "kube-system",
 					}},
 				},
 			}
@@ -53,12 +54,12 @@ var _ = Describe("Spiderpool", func() {
 					Namespace: "test-ns",
 				},
 				Spec: spider_types.ClaimParameterSpec{
-					StaticNics: []spider_types.StaticNic{{
-						MultusConfigName: "nad3",
-						Namespace:        "kube-system",
+					SecondaryNics: []spider_types.MultusConfig{{
+						MultusName: "nad3",
+						Namespace:  "kube-system",
 					}, {
-						MultusConfigName: "nad4",
-						Namespace:        "kube-system",
+						MultusName: "nad4",
+						Namespace:  "kube-system",
 					}},
 				},
 			}
@@ -66,8 +67,8 @@ var _ = Describe("Spiderpool", func() {
 			pod := testhelpers.NewFakePod("test-pod", "kube-system/nad2", "kube-system/nad1")
 			Expect(spiderClaimParameterToAnnotations(nil, scp, pod)).ToNot(HaveOccurred())
 
-			Expect(pod.Annotations[constant.MultusDefaultNetAnnot]).To(Equal("kube-system/nad3"))
-			Expect(pod.Annotations[constant.MultusNetworkAttachmentAnnot]).To(Equal("kube-system/nad4"))
+			Expect(pod.Annotations[constant.MultusDefaultNetAnnot]).To(Equal("kube-system/nad1"))
+			Expect(pod.Annotations[constant.MultusNetworkAttachmentAnnot]).To(Equal("kube-system/nad3,kube-system/nad4"))
 		})
 	})
 })
